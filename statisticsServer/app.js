@@ -1,14 +1,17 @@
 var http = require('http'),
     express = require('express'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    io = require('socket.io');
 
 var app = express();
 var server = http.createServer(app);
+io = io.listen(server);
 
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
 
 var mysql = require('mysql');
 var pool  = mysql.createPool({
@@ -18,25 +21,37 @@ var pool  = mysql.createPool({
     database        : 'statisticsServer'
 });
 
-app.get('/training', function(req, res){
-    console.log('--- Loading training page ---');
-    var body = '<html>' +
-        '<head>' +
-        '<meta http-equiv="content-type" content="text/html"; ' +
-        'charset="UTF-8" />' +
-        '</head>' +
-        '<body>' +
-        '<form action="/trainingSave" method="post">' +
-        '<input type="text" name="text">' +
-        '<input type="submit" value="Save training" />' +
-        '</form>' +
-        '</body>' +
-        '</html>';
+io.on('connection', function(socket) {
+    console.log("user connected");
 
-    res.writeHead(200, {"Content-Type": "text/html"});
-    res.write(body);
-    res.end();
+    socket.on('getData', function() {
+        console.log('getData request');
+
+        pool.getConnection(function(err, connection) {
+            var temp;
+            connection.query('SELECT * FROM training', function (error, results, fields) {
+                connection.release();
+                if (error) throw error;
+
+                var body =
+                    '<html>' +
+                    '<head>' +
+                    '<meta http-equiv="content-type" content="text/html"; ' +
+                    'charset="UTF-8" />' +
+                    '</head>' +
+                    '<body>' +
+                    '<div>All trainings:</div>';
+
+                io.sockets.emit('serverAllTrainings', results);
+            });
+        });
+    })
 });
+
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/public/index.html');
+});
+
 
 app.post('/trainingSave', function(req, res){
     console.log('--- Loading trainingSave page ---');
@@ -53,53 +68,10 @@ app.post('/trainingSave', function(req, res){
         });
     });
 
-    var body = '<html>' +
-        '<head>' +
-        '<meta http-equiv="content-type" content="text/html"; ' +
-        'charset="UTF-8" />' +
-        '</head>' +
-        '<body>' +
-        '<div>You entered ' + trainingVolume + '</div>' +
-        '<div>All trainings <a href="allTrainings">here</a></div>'+
-        '</body>' +
-        '</html>';
-
-    res.writeHead(200, {"Content-Type": "text/html"});
-    res.write(body);
-    res.end();
+    res.sendFile(__dirname + '/public/trainingSave.html');
 });
-app.get('/allTrainings', function(req,res) {
-    console.log('--- Loading allTrainings page ---');
 
-    pool.getConnection(function(err, connection) {
-        var temp;
-        connection.query('SELECT * FROM training', function (error, results, fields) {
-            connection.release();
-            if (error) throw error;
-
-            var body =
-                '<html>' +
-                '<head>' +
-                '<meta http-equiv="content-type" content="text/html"; ' +
-                'charset="UTF-8" />' +
-                '</head>' +
-                '<body>' +
-                '<div>All trainings:</div>';
-
-            results.forEach(function(item, i, arr) {
-                body += 'id: '  + item['id'] + ' volume: ' + item['volume'] + '<br />';
-            });
-
-            body +=
-                '</body>' +
-                '</html>';
-
-            res.writeHead(200, {"Content-Type": "text/html"});
-            res.write(body);
-            res.end();
-        });
-    });
-});
+app.use(express.static('public'));
 
 server.listen(3056, function(){
     console.log('+++++ statisticsServer was started +++++');
