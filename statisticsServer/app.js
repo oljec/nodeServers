@@ -18,7 +18,7 @@ var pool  = mysql.createPool({
     host            : 'localhost',
     user            : 'root',
     password        : '',
-    database        : 'statisticsServer'
+    database        : 'nodeStatistics'
 });
 
 io.on('connection', function(socket) {
@@ -52,6 +52,21 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
 
+function SaveTraining(trainingRes){
+    var DBData = {
+        pushUp: trainingRes.pushUp,
+        planka: trainingRes.planka
+    };
+    pool.getConnection(function(err, connection) {
+        connection.query('INSERT INTO training SET ?', DBData, function (error, results, fields) {
+            connection.release();
+            if (error) throw error;
+        });
+    });
+}
+
+
+
 
 app.post('/trainingSave', function(req, res){
     console.log('--- Loading trainingSave page ---');
@@ -59,14 +74,26 @@ app.post('/trainingSave', function(req, res){
     // res.setHeader('Access-Control-Allow-Origin', '*');
 
     var data = req.body;
-    var trainingVolume = parseInt(data.text, 10);
+    console.log(req.body);
 
-    pool.getConnection(function(err, connection) {
-        connection.query('INSERT INTO training SET volume = ?', [trainingVolume], function (error, results, fields) {
-            connection.release();
-            if (error) throw error;
-        });
-    });
+    var training={};
+
+    if (data.pushUp == '') {
+        training['pushUp']=0;
+    }
+    else {
+        training['pushUp'] = data.pushUp;
+    }
+    if (data.planka == '') {
+        training['planka']=0;
+    }
+    else {
+        training['planka'] = data.planka;
+    }
+
+
+    SaveTraining(training);
+
 
     res.sendFile(__dirname + '/public/trainingSave.html');
 });

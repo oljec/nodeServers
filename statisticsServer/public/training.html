@@ -3,11 +3,23 @@
     <head>
         <meta http-equiv="content-type" content="text/html"; charset="UTF-8">
         <title>Title</title>
+        <link rel="stylesheet" href="styles/main.css" type="text/css">
     </head>
     <body>
-        <form action="/trainingSave" method="post">
-            <input type="text" name="text">
-            <input type="submit" value="Save training" />
-        </form>
+        <div class="wrapper">
+            <header>
+            </header>
+            <form action="/trainingSave" method="post">
+                <p>
+                    PushUp, count: <br />
+                    <input type="number" name="pushUp" value="0"><br />
+                </p>
+                <p>
+                    Planka, sec: <br />
+                    <input type="number" name="planka" value="0"><br />
+                </p>
+                <input type="submit" value="Save training" />
+            </form>
+        </div>>
     </body>
 </html>

@@ -1,6 +1,6 @@
 console.log('test');
 
-var socket = io("http://localhost:3056");
+var socket = io("http://192.168.0.103:3056");
 
 $(document).ready(function (){
     socket.emit('getData');
@@ -9,8 +9,12 @@ $(document).ready(function (){
         console.log(data);
         var body='';
         data.forEach(function(item, i, arr) {
-            body += 'id: ' + item['id'] + ' volume: ' + item['volume'] + '<br />';
+            body +=
+                'id: ' + item['id'] +
+                ' pushUp: ' + item['pushUp'] +
+                ' planka: ' + item['planka'] +
+                '<br />';
         });
-        $('.test_outer').append(body);
+        $('.test_outer').html(body);
     });
 });
