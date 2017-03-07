@@ -1,0 +1,15 @@
+.fullField {
+    width: 340px;
+}
+
+.fullField .fieldCell{
+    float:left;
+    width:30px;
+    height:30px;
+    background: orange;
+    border: 1px solid black;
+    margin:1px;
+}
+.fullField .fieldCell.point {
+    background: red;
+}

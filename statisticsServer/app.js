@@ -25,7 +25,7 @@ io.on('connection', function(socket) {
     console.log("user connected");
 
     socket.on('getData', function() {
-        console.log('getData request');
+        console.log('--- getData request ---');
 
         pool.getConnection(function(err, connection) {
             var temp;
