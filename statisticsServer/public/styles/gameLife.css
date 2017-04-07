@@ -1,14 +1,18 @@
 .fullField {
-    width: 340px;
+    width: 460px;
 }
 
 .fullField .fieldCell{
     float:left;
-    width:30px;
-    height:30px;
+    width:20px;
+    height:20px;
     background: orange;
     border: 1px solid black;
-    margin:1px;
+    margin-right:1px;
+    margin-bottom:1px;
+}
+.fullField .fieldCell.wall {
+    background: #4b2a00;
 }
 .fullField .fieldCell.point {
     background: red;

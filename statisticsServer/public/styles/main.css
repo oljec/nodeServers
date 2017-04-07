@@ -5,16 +5,32 @@
 header {
     height:300px;
     width:800px;
+    width:80%px;
     background: url(../img/header.jpg) no-repeat;
 }
 .wrapper {
     margin: 0 auto;
     width:840px;
+    width:84%;
     border: 1px solid black;
     padding:20px;
     border-radius: 10px;
 }
-
+.mobileDevice{
+    background: yellow;
+    width:40%;
+    height:100px;
+}
+@media screen and (max-width: 1100px) {
+    .mobileDevice {
+        background: green;
+    }
+}
+@media screen and (min-width:480px) and (max-width:800px) {
+    .mobileDevice {
+        background: blue;
+    }
+}
 .cleaner {
     clear: both;
 }

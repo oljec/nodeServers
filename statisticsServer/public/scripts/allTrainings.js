@@ -1,6 +1,6 @@
 console.log('test');
 
-var socket = io("http://192.168.0.102:3056");
+var socket = io("http://192.168.1.171:3056");
 
 $(document).ready(function (){
     socket.emit('getData');
